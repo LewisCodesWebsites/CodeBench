@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>CodeBench</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; }
+        textarea { width: 100%; height: 200px; }
+        pre { background: #f0f0f0; padding: 10px; }
+    </style>
+</head>
+<body>
+    <h1>CodeBench</h1>
+    <label for="language">Language:</label>
+    <select id="language">
+        <option value="python">Python</option>
+        <option value="c">C</option>
+        <option value="javascript">JavaScript</option>
+    </select>
+    <br><br>
+    <textarea id="code" placeholder="Write your code here"></textarea>
+    <br>
+    <label for="input">Input (optional):</label>
+    <br>
+    <textarea id="input" placeholder="Input for your program"></textarea>
+    <br>
+    <label for="expected">Expected Output (optional):</label>
+    <br>
+    <textarea id="expected" placeholder="Expected output for judging"></textarea>
+    <br>
+    <button onclick="runCode()">Run</button>
+    <h2>Result</h2>
+    <pre id="output"></pre>
+
+<script>
+function runCode() {
+    const language = document.getElementById('language').value;
+    const code = document.getElementById('code').value;
+    const input = document.getElementById('input').value;
+    const expected_output = document.getElementById('expected').value;
+    fetch('/run', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ language, code, input, expected_output })
+    })
+    .then(res => res.json())
+    .then(data => {
+        document.getElementById('output').textContent =
+            'stdout:\n' + data.stdout + '\n\nstderr:\n' + data.stderr + '\n\nsuccess: ' + data.success;
+    })
+    .catch(err => {
+        document.getElementById('output').textContent = 'Error: ' + err;
+    });
+}
+</script>
+</body>
+</html>
